@@ -12,7 +12,7 @@ def sigint_handler(*args):
     global is_running
     is_running = False
 
-def read(ser : serial.Serial, header : list):
+def read(ser : serial.Serial):
     max_taxels = 512
 
     buffer = ser.readline().decode('utf8')
@@ -32,35 +32,18 @@ def read(ser : serial.Serial, header : list):
         print(f"Error parsing values: {strings}")
         return None
 
-def vector(taxels:list):
-    """Creates a 3D vector from the taxel values when  using a Touchlab triaxial sensor.
-
-    Args:
-        taxels (list): The four taxels of the sensor
-
-    Returns:
-        _type_: 3D force vector x, y, z
-    """
-    x = taxels[3] - taxels[1]
-    y = taxels[2] - taxels[0]
-    z = taxels[0]+ taxels[1] + taxels[2] +taxels[3]
-    return x, y, z
-
 def main():
     global is_running
     signal.signal(signal.SIGINT, sigint_handler) # Handle ctrl+c in terminal
     try:
         with serial.Serial(sys.argv[-1], 115200, timeout=0.5) as ser:
             ser.read_all()
-            header = [b'\x00', b'\x00']
             while is_running:
-                # Check for the header
-                values = read(ser, header)
+                values = read(ser)
                 if values is None:
                     continue
                 else:
                     print(f"{values}".replace(" ", "\t"))
-                    print(f"Vector {vector(values)}")
     except serial.serialutil.SerialException:
         print('Serial port not available')
 
