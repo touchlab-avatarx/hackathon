@@ -24,7 +24,7 @@ def read(ser : serial.Serial, header : list):
             val = [0] * num_taxels
             for i in range(num_taxels):
                 # print(strings[i])
-                val[i] = float(strings[i])
+                val[i] = int(strings[i])
             return val
         else:
             return None
@@ -43,7 +43,7 @@ def vector(taxels:list):
     """
     x = taxels[3] - taxels[1]
     y = taxels[2] - taxels[0]
-    z = abs(x) + abs(y)
+    z = taxels[0]+ taxels[1] + taxels[2] +taxels[3]
     return x, y, z
 
 def main():
